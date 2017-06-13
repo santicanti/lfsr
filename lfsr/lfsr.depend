@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1497320043 source:/home/santiago/Desktop/projects/lfsr/lfsr/main.c
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+
