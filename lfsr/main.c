@@ -12,18 +12,16 @@ typedef struct charByte {
     int numberOfBits;
 } charByte;
 
-void lfsr(int, int[],int, arrayOfChars*);
+void lfsr(int, int[],int);
 uint32_t getRegstrFeed(uint32_t, int [], int, int);
 uint32_t getBit(uint32_t, int );
-void saveLsb(unsigned, arrayOfChars*);
+void saveLsb(unsigned, arrayOfChars*, charByte*);
 void printArrayToFile(arrayOfChars*);
 unsigned char convertByteToChar(unsigned);
 void printCharInBits(char);
 int getArrayLength(int []);
 uint32_t generateRegstr(int);
-
-charByte lsbByte;
-
+void initializeVariables(arrayOfChars*, charByte*);
 
 int main(int argc, char* argv[]){
     //int taps[3] = {0, 3, 5};
@@ -38,32 +36,38 @@ int main(int argc, char* argv[]){
         printf("No taps where provided to feed the register.");
         exit(EXIT_FAILURE);
     }
-    arrayOfChars arrayToPrint;
-    arrayToPrint.position = 0;
-    lsbByte.numberOfBits = 0;
 //  int numberOfTaps = NELEMS(taps);
     printf("number of elements = %d \n" , sizeof(taps)/sizeof(int));
-    lfsr(10, taps, sizeof(taps)/sizeof(int) , &arrayToPrint);
+    lfsr(10, taps, sizeof(taps)/sizeof(int));
 
     return 0;
 }
 
-void lfsr(int length, int taps[], int numberOfTaps, arrayOfChars* arrayToPrint) {
+void lfsr(int length, int taps[], int numberOfTaps) {
 
-    //unsigned regstr = 0b10101001;
+    arrayOfChars arrayToPrint;
+    charByte lsbByte;
+    initializeVariables(&arrayToPrint, &lsbByte);
+
     uint32_t regstr = 1; //0b11010001110100011001000111010001;//generateRegstr(length);
     uint32_t regstrFeed;
     long i;
 
     unsigned lsb;
 
-    for (i = 0; i < 1024 * 8; i++) {
+    for (i = 0; i <  8 * 1024; i++) {
         lsb = regstr & 1;   //Gets the least significant bit
-        saveLsb(lsb,arrayToPrint);  //Saves the lsb to the array thats going to be printed
+        saveLsb(lsb, &arrayToPrint, &lsbByte);  //Saves the lsb to the array thats going to be printed
         regstrFeed = getRegstrFeed(regstr, taps, numberOfTaps, length); //Gets the bit thats going to feed the register
         regstr >>= 1;   //Shifts the register one bit to the right
         regstr ^= regstrFeed;   //Adds the register feed bit to the register
     }
+}
+
+void initializeVariables(arrayOfChars* arrayToPrint, charByte* lsbByte) {
+    arrayToPrint->position = 0;
+    lsbByte->byte = 0b00000000;
+    lsbByte->numberOfBits= 0;
 }
 
 uint32_t generateRegstr(int length) {
@@ -90,17 +94,16 @@ uint32_t getBit(uint32_t number, int bitNumber) {
     return masked_n >> bitNumber;
 }
 
-void saveLsb(unsigned lsb, arrayOfChars* arrayToPrint) {
-    lsbByte.byte <<= 1;
-    lsbByte.byte = lsbByte.byte | lsb;
-    lsbByte.numberOfBits++;
+void saveLsb(unsigned lsb, arrayOfChars* arrayToPrint, charByte* lsbByte) {
+    lsbByte->byte <<= 1;
+    lsbByte->byte = lsbByte->byte | lsb;
+    lsbByte->numberOfBits++;
 
-    if (lsbByte.numberOfBits == 7) {
-        lsbByte.numberOfBits = 0;
-
-        arrayToPrint->array[arrayToPrint->position] = lsbByte.byte;
+    if (lsbByte->numberOfBits == 8) {
+        lsbByte->numberOfBits = 0;
+        arrayToPrint->array[arrayToPrint->position] = lsbByte->byte;
         arrayToPrint->position++;
-        if (arrayToPrint->position == 1023) printArray(arrayToPrint);
+        if (arrayToPrint->position == 1024) printArray(arrayToPrint);
     }
 }
 
@@ -172,7 +175,7 @@ void printCharInBits (char c) {
     for (i = 0; i < 8; i++) {
         printf("%d", !!((c << i) & 0x80));
     }
-    //printf("\n");
+    printf("\n");
 }
 
 
