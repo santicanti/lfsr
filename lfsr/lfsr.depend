@@ -1,6 +1,15 @@
 # depslib dependency file v1.0
-1497579065 source:/home/santiago/Desktop/projects/lfsr/lfsr/main.c
+1497580082 source:/home/santiago/Desktop/projects/lfsr/lfsr/main.c
 	<stdint.h>
 	<stdio.h>
 	<stdlib.h>
+	"lfsr.h"
+
+1497580072 source:/home/santiago/Desktop/projects/lfsr/lfsr/lfsr.c
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	"lfsr.h"
+
+1497579985 /home/santiago/Desktop/projects/lfsr/lfsr/lfsr.h
 
