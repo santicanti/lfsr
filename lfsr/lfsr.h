@@ -16,6 +16,7 @@ uint32_t getRegstrFeed(uint32_t, int [], int, int);
 uint32_t getBit(uint32_t, int );
 void saveLsb(unsigned, arrayOfChars*, charByte*);
 void printArrayToFile(arrayOfChars*);
+void printArray(arrayOfChars*);
 unsigned char convertByteToChar(unsigned);
 void printCharInBits(char);
 int getArrayLength(int []);
